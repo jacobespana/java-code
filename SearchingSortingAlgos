@@ -1,0 +1,181 @@
+package SearchingSortingAlgos;
+
+import java.util.Arrays;
+/**
+ *
+ * @author Jacob Espana
+ */
+public class HWSorts 
+{
+    static int[] sizes = {20, 100, 500, 1000, 2000, 5000, 10000, 20000, 40000, 65000, 100000, 120000, 130000, 140000, 200000, 500000, 1000000};  
+    
+    public static void main(String[] args)
+    {
+       int sIdx = 0;
+       long startTime;
+       long endTime;
+       double time;
+       while( sIdx < sizes.length ) 
+       {
+          int[] A = new int[sizes[sIdx]];
+          int[] B = new int[sizes[sIdx]];  
+          int[] C = new int[sizes[sIdx]]; 
+          int[] D = new int[sizes[sIdx]]; 
+          int[] E = new int[sizes[sIdx]]; 
+          for( int i=0; i<A.length; i++ ) 
+          {
+             A[i] = (int)(Math.random()*sizes[sIdx]*2);
+             B[i] = A[i];
+             C[i] = A[i];
+             D[i] = A[i];
+             E[i] = A[i];
+          }
+          System.out.println( Arrays.toString(A) );
+          System.out.println( "----------------\nSize = " + C.length);
+          startTime = System.nanoTime();         
+          C = mergeSort(C); 
+          
+          endTime = System.nanoTime();
+          time = (endTime - startTime) / 1000000000.;
+          System.out.println( "Merge sort finished - time = " + time  + " seconds.");
+          System.out.println( "Starting bubble sort!" );
+          System.out.println( Arrays.toString(C) );
+          startTime = System.nanoTime();
+          bubbleSort(B);
+          endTime = System.nanoTime();
+          time = (endTime - startTime) / 1000000000.;
+          System.out.println( "Bubble sort finished - time = " + time  + " seconds." );
+          System.out.println( Arrays.toString(B) );
+          System.out.println( "Starting java's Array sort!" );
+          System.out.println( Arrays.toString(C) );
+          startTime = System.nanoTime();
+          D = javaSort(D);
+          endTime = System.nanoTime();
+          time = (endTime - startTime) / 1000000000.;
+          System.out.println( "Java's Array sort finished - time = " + time  + " seconds." );
+          System.out.println( "Starting QuickSort!" );
+          System.out.println( Arrays.toString(C) );
+          startTime = System.nanoTime();
+          E = quickSort(E);
+          endTime = System.nanoTime();
+          time = (endTime - startTime) / 1000000000.;
+          System.out.println( "QuickSort finished - time = " + time  + " seconds." );
+          sIdx = sIdx + 1;   
+       }
+    }  
+
+    public static void bubbleSort(int[] A)
+    {
+        if(A.length==1) //base case; checks to see if array is of size 1
+          return;
+
+        for(int i=0;i<A.length-1;i++) 
+        {
+            for(int j=0;j<A.length-i-1;j++)
+            {   
+                if(A[j]>A[j+1]) //check to see if value in array index is larger than the succeeding array index
+                {
+                   int temp = A[j]; //if so, swap with temp
+                   A[j] = A[j+1];
+                   A[j+1] = temp;
+                }
+            }
+        }
+    }
+    public static int[] mergeSort(int[] X)
+    {
+       if(X.length<=1) //base case, check to see if array is of size 1
+           return X;
+       
+        //split array into two smaller arrays 
+       int[] L = new int[X.length/2];
+       int[] R = new int[X.length-L.length];
+       
+       for(int i=0;i<L.length;i++) //
+       {    
+           L[i] = X[i];
+       }
+       for(int i=0;i<R.length;i++)
+       {
+           R[i] = X[i + L.length];
+       }
+       
+       L = mergeSort(L);
+       R = mergeSort(R);
+       X = merge(L, R);
+       
+       return X;
+       
+    }
+    private static int[] merge(int[] A, int[] B)
+    {
+       int[] X = new int[A.length+B.length];
+       int i1 = 0;
+       int i2 = 0;
+       int i = 0;
+       
+       while(i1<A.length && i2<B.length)
+       {
+           if(A[i1]<B[i2])
+           {
+               X[i++] = A[i1++];
+           }
+           else if(A[i1]>=B[i2])
+           {
+               X[i++] = B[i2++];
+           }
+       }
+       
+       while(i1<A.length)
+       {
+           X[i++] = A[i1++];
+       }
+       while(i2<B.length)
+       {
+           X[i++] = B[i2++];
+       }
+       
+       return X;   
+    }
+    public static int[] javaSort(int[] X)
+    {
+       Arrays.sort(X);
+       return X;
+       
+    }
+    public static int[] quickSort(int[] X)
+    {
+       return quickSortRec(X, 0, X.length-1);   
+    }
+    public static int[] quickSortRec(int[] X, int s, int e)
+    {
+        if(e <= s)
+            return X;
+        
+        int pivot = partition(X, s, e);
+        quickSortRec(X, s, pivot-1);
+        quickSortRec(X, pivot+1, e);
+        
+        return X;
+    }
+    public static int partition(int[] X, int s, int e)
+    {
+        int pivot = s;
+        
+        for(int i=s+1; i<=e;i++)
+        {
+            if(X[i] < X[s])
+            {
+                //pivot = pivot+1;
+                int temp = X[i];
+                X[i] = X[pivot];
+                X[pivot] = temp;
+                pivot = pivot+1;
+            }  
+        }
+        int t = X[pivot];
+        X[pivot] = X[s];
+        X[s] = t;
+        return pivot;    
+    }
+}
