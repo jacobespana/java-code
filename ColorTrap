@@ -1,0 +1,250 @@
+ package javaFX;
+/*
+* Modified by Jacob Espana
+*/
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.application.Application;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.stage.Stage;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
+import javafx.scene.text.*;
+import javafx.util.Duration;
+
+public class ColorTrap extends Application
+{
+    private Scene scene;
+    private BorderPane borderPane;
+    private Text txtCountDown;
+    private Timeline timeline, timeline2;
+    private Text txtTrap;
+    private Text txtScore;
+    private Text txtTimeRem;
+    private final int TIMER = 15;
+    private int count = 0;
+    private int score;
+    private Text txtOp1, txtOp2, txtOp3, txtOp4, txtOp5, txtOp6, txtOp7;
+    private HBox hbScore, hbTrap;
+    private VBox vbDisplayResults;
+    private FlowPane fpOptions;
+    private Random rand;
+    private final List<String> colorText = Arrays.asList("Black", "Orange", "Brown", "Yellow", "Blue", "Red", "Purple");
+    private final List<Color> colors = Arrays.asList(Color.BLACK, Color.ORANGE, Color.BROWN, Color.YELLOW, Color.BLUE, Color.RED, Color.PURPLE);
+    private final List<String> bgColor = Arrays.asList("-fx-background-color: pink", "-fx-background-color:beige", "-fx-background-color:burlywood", "-fx-background-color:cyan", "-fx-background-color:gold", "-fx-background-color:lavender");
+    
+    @Override
+    public void start(Stage primaryStage)
+    {
+        borderPane = new BorderPane();
+        borderPane.setStyle("-fx-background-color: lightgrey");
+        scene = new Scene(borderPane, 600, 300);
+        primaryStage.setMinHeight(300);
+        primaryStage.setMinWidth(600);
+        initializeGame();
+        startPlay();
+
+        primaryStage.setTitle("Color Trap");
+        primaryStage.setScene(scene);
+        primaryStage.show();
+    }
+
+    public void startPlay()
+    {
+        chooseTrapWordAndColor();
+        colorNameOptions();
+
+        count = TIMER;
+        txtCountDown.setText(TIMER + "");
+        timeline = new Timeline(new KeyFrame(
+                Duration.millis(1000), e -> {
+
+
+                    if(count >= 0)
+                    {
+                        txtCountDown.setText(count + "");
+                        count--;
+                    }
+                    else
+                    {
+                        endOfGame();
+                    }
+                }));
+        timeline.setCycleCount(TIMER + 2);
+        timeline.play();
+        rand = new Random();
+        Collections.shuffle(bgColor);
+        timeline2 = new Timeline(new KeyFrame(
+                Duration.millis(250), e -> {
+                    borderPane.setStyle(bgColor.get(rand.nextInt(6)));
+                        
+            }));
+        timeline2.setCycleCount(64);
+        timeline2.play();
+    }
+    
+    public void endOfGame()
+    {
+        hbTrap.getChildren().remove(txtTrap);
+        borderPane.getChildren().remove(fpOptions);
+        hbScore.getChildren().removeAll(txtScore, txtTimeRem, txtCountDown);
+        
+        vbDisplayResults = new VBox(40);
+        txtScore.setFont(Font.font("Marker Felt", 40));
+        txtScore.setText("Your " + txtScore.getText());
+        vbDisplayResults.setAlignment(Pos.CENTER);
+        
+        Button btnRestart = new Button("Play Again");
+      
+        vbDisplayResults.getChildren().addAll(txtScore, btnRestart);
+        borderPane.setCenter(vbDisplayResults);
+        btnRestart.setOnAction(e -> {
+            vbDisplayResults.getChildren().removeAll(txtScore, btnRestart);
+            borderPane.getChildren().remove(vbDisplayResults);
+            score = 0;
+            initializeGame();
+            startPlay();       
+        });
+    }
+
+    public void checkChoice(Text choice)
+    {
+        String s = choice.getText();
+        Paint c = Paint.valueOf(s);
+        Paint c2 = txtTrap.getFill();
+        if(c.equals(c2))
+        {
+            score++;
+        }
+        
+        txtScore.setText("Score: " + score);
+        hbTrap.getChildren().remove(txtTrap);
+        fpOptions.getChildren().removeAll(
+                txtOp1, txtOp2, txtOp3, txtOp4, txtOp5, txtOp6, txtOp7);
+               
+        chooseTrapWordAndColor();
+        colorNameOptions();
+    }
+
+    public void chooseTrapWordAndColor()
+    {   
+        Collections.shuffle(colorText);
+        Collections.shuffle(colors);
+        rand = new Random();
+        
+        txtTrap.setText(colorText.get(rand.nextInt(7)));
+        txtTrap.setFont(Font.font("Marker Felt", 60));
+        txtTrap.setFill(colors.get(rand.nextInt(7)));  
+        hbTrap.getChildren().add(txtTrap);
+    }
+    
+    public void colorNameOptions()
+    {
+        Collections.shuffle(colorText);
+        Collections.shuffle(colors);
+         
+        txtOp1.setText(colorText.get(0));
+        txtOp1.setFont(Font.font("Marker Felt", 40));
+        txtOp1.setFill(colors.get(0));
+        txtOp1.setOnMouseClicked(e -> {
+            checkChoice(txtOp1);
+        });
+        
+        txtOp2.setText(colorText.get(1));
+        txtOp2.setFont(Font.font("Marker Felt", 40));
+        txtOp2.setFill(colors.get(1));
+        txtOp2.setOnMouseClicked(e -> {
+            checkChoice(txtOp2);
+        });
+        
+        txtOp3.setText(colorText.get(2));
+        txtOp3.setFont(Font.font("Marker Felt", 40));
+        txtOp3.setFill(colors.get(2));
+        txtOp3.setOnMouseClicked(e -> {
+            checkChoice(txtOp3);
+        });
+        
+        txtOp4.setText(colorText.get(3));
+        txtOp4.setFont(Font.font("Marker Felt", 40));
+        txtOp4.setFill(colors.get(3));
+        txtOp4.setOnMouseClicked(e -> {
+            checkChoice(txtOp4);
+        });
+        
+        txtOp5.setText(colorText.get(4));
+        txtOp5.setFont(Font.font("Marker Felt", 40));
+        txtOp5.setFill(colors.get(4));
+        txtOp5.setOnMouseClicked(e -> {
+            checkChoice(txtOp5);
+        });
+        
+        txtOp6.setText(colorText.get(5));
+        txtOp6.setFont(Font.font("Marker Felt", 40));
+        txtOp6.setFill(colors.get(5));
+        txtOp6.setOnMouseClicked(e -> {
+            checkChoice(txtOp6);
+        });
+        
+        txtOp7.setText(colorText.get(6));
+        txtOp7.setFont(Font.font("Marker Felt", 40));
+        txtOp7.setFill(colors.get(6));
+        txtOp7.setOnMouseClicked(e -> {
+            checkChoice(txtOp7);
+        });
+        
+        fpOptions.getChildren().addAll(
+                txtOp1, txtOp2, txtOp3, txtOp4, txtOp5, txtOp6, txtOp7);
+    }
+
+    public void initializeGame()
+    {
+        rand = new Random();
+        borderPane.prefHeightProperty().bind(scene.heightProperty());
+        borderPane.prefWidthProperty().bind(scene.widthProperty());
+        txtCountDown = new Text();
+        
+        hbTrap = new HBox(10); 
+        hbTrap.setAlignment(Pos.CENTER);
+        hbTrap.maxHeightProperty().bind(borderPane.heightProperty().multiply(0.35));
+        hbTrap.maxWidthProperty().bind(borderPane.widthProperty());
+        hbTrap.setPadding(new Insets(0,200,0,200));
+        borderPane.setTop(hbTrap);
+        txtTrap = new Text(colorText.get(rand.nextInt(7)));
+        
+        fpOptions = new FlowPane(); 
+        fpOptions.setAlignment(Pos.CENTER);
+        fpOptions.maxHeightProperty().bind(borderPane.heightProperty().multiply(0.55));
+        fpOptions.maxWidthProperty().bind(borderPane.widthProperty().multiply(0.5));
+        fpOptions.setHgap(10);
+        borderPane.setCenter(fpOptions);
+        txtOp1 = new Text();
+        txtOp2 = new Text();
+        txtOp3 = new Text();
+        txtOp4 = new Text();
+        txtOp5 = new Text();
+        txtOp6 = new Text();
+        txtOp7 = new Text();
+
+        hbScore = new HBox();
+        hbScore.setPadding(new Insets(10));
+        hbScore.maxHeightProperty().bind(borderPane.heightProperty().multiply(0.1));
+        hbScore.maxWidthProperty().bind(borderPane.widthProperty());
+        txtScore = new Text("Score: " + score);
+        txtTimeRem = new Text("                      Time Remaining: ");
+        hbScore.getChildren().addAll(txtScore, txtTimeRem, txtCountDown);
+        hbScore.setAlignment(Pos.CENTER);
+        borderPane.setBottom(hbScore);      
+    }
+    public static void main(String[] args)
+    {
+        launch(args);
+    }
+}
