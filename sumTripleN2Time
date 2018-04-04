@@ -1,0 +1,44 @@
+import java.io.*;
+import java.util.*;
+import java.text.*;
+import java.math.*;
+import java.util.regex.*;
+import java.util.Arrays;
+
+public class SolutionSumTriple {
+
+    public static void main(String[] args) 
+    {
+        Scanner STDIN = new Scanner(System.in);
+        int v = STDIN.nextInt();
+        int n = STDIN.nextInt();
+        int[] arr = new int[n];
+        for(int i=0;i<n;i++)
+        {
+            arr[i] = STDIN.nextInt();
+        }
+        Arrays.sort(arr);
+        int count = 0;
+        int f, l;
+     
+        for(int i=0;i<arr.length-2;i++)
+        {
+            f = i+1;
+            l = arr.length-1;
+            
+            while(f<l)
+            {
+                if(arr[i] + arr[f] + arr[l] == v)
+                {
+                    count++;   
+                    l--; 
+                }
+                else if(arr[i] + arr[f] + arr[l] < v)
+                    f++;
+                else 
+                    l--;
+            }
+        }  
+        System.out.println(count);
+    }
+}
